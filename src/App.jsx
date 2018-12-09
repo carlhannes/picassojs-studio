@@ -6,7 +6,7 @@ import MonacoEditor from 'react-monaco-editor';
 import { Menu, Icon } from 'antd';
 
 import list from './examples';
-import RenderingArea from './components/rendering-area';
+import RenderingArea from './components/rendering-area/rendering-area';
 
 class App extends Component {
   constructor(...props) {
