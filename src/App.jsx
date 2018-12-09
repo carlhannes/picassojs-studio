@@ -7,6 +7,7 @@ import { Menu, Icon } from 'antd';
 
 import list from './examples';
 import localList from './core/local-repo';
+import prompt from './core/prompt';
 
 import RenderingArea from './components/rendering-area/rendering-area';
 
@@ -65,18 +66,32 @@ class App extends Component {
 
   selectItem(id) {
     const { location } = this.props;
-    location.assign(`#${id}`);
+    const { selectedMenuItem, selectedObject } = this.state;
 
-    const selectedMenuItem = id;
-    let selectedObject;
+    let newSelectedMenuItem = id;
+    let newSelectedObject;
 
-    if (selectedMenuItem.indexOf('@local/') === 0) {
-      selectedObject = localList.get(selectedMenuItem.replace('@local/', ''));
+    if (newSelectedMenuItem.indexOf('@local/') === 0) {
+      newSelectedObject = localList.get(newSelectedMenuItem.replace('@local/', ''));
+    } else if (newSelectedMenuItem.indexOf('@action/') === 0) {
+      if (newSelectedMenuItem === '@action/new') {
+        prompt('What do you want to name it?', 'Awesomebox', (title) => {
+          const result = localList.new({ title });
+          if (result && result.id) {
+            newSelectedMenuItem = `@local/${result.id}`;
+            newSelectedObject = result;
+          }
+        });
+      }
+
+      newSelectedMenuItem = selectedMenuItem;
+      newSelectedObject = selectedObject;
     } else {
-      selectedObject = list.reduce((o, c) => (c.id === selectedMenuItem ? c : o));
+      newSelectedObject = list.reduce((o, c) => (c.id === newSelectedMenuItem ? c : o));
     }
 
-    this.setState({ selectedMenuItem, selectedObject });
+    location.assign(`#${newSelectedMenuItem}`);
+    this.setState({ selectedMenuItem: newSelectedMenuItem, selectedObject: newSelectedObject });
   }
 
   render() {
@@ -113,6 +128,11 @@ class App extends Component {
                 )}
             >
               {localList.list().map(item => <Menu.Item key={`@local/${item.id}`}>{item.title}</Menu.Item>)}
+              <Menu.Item key="@action/new">
+                <Icon type="plus" />
+                {' '}
+                Create new
+              </Menu.Item>
             </Menu.SubMenu>
           </Menu>
         </div>

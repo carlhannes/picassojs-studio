@@ -25,7 +25,12 @@ const localRepo = {
       return 'No item title';
     }
 
-    const newItem = { ...item, id: slugify(item.title) };
+    const defaults = {
+      code: '',
+      data: '',
+    };
+
+    const newItem = { ...defaults, ...item, id: slugify(item.title) };
 
     if (localRepo.idExists(newItem.id)) {
       return 'Duplicate item';
