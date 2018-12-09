@@ -6,6 +6,8 @@ import MonacoEditor from 'react-monaco-editor';
 import { Menu, Icon } from 'antd';
 
 import list from './examples';
+import localList from './core/local-repo';
+
 import RenderingArea from './components/rendering-area/rendering-area';
 
 class App extends Component {
@@ -16,35 +18,69 @@ class App extends Component {
 
     this.onEditorChange = this.onEditorChange.bind(this);
     this.onMenuClick = this.onMenuClick.bind(this);
+    this.selectItem = this.selectItem.bind(this);
 
     this.state = {
       selectedMenuItem: location.hash.replace('#', '') || list[0].id,
     };
+
+    const { selectedMenuItem } = this.state;
+
+    this.state.selectedObject = {
+      id: selectedMenuItem,
+      title: selectedMenuItem,
+      code: '',
+      data: '',
+    };
   }
 
   componentDidMount() {
-    const { location } = this.props;
     const { selectedMenuItem } = this.state;
 
-    if (location.hash.replace('#', '') !== selectedMenuItem) {
-      location.assign(`#${list[0].id}`);
+    this.selectItem(selectedMenuItem);
+  }
+
+  onEditorChange(code) {
+    const { selectedMenuItem, selectedObject } = this.state;
+
+    if (selectedMenuItem.indexOf('@local/') === 0) {
+      localList.update({ id: selectedMenuItem.replace('@local/', ''), code });
+      this.setState({
+        selectedObject: {
+          ...selectedObject,
+          code,
+        },
+      });
+    } else {
+      const result = localList.fork(selectedObject);
+      if (result && result.id) {
+        this.selectItem(`@local/${result.id}`);
+      }
     }
   }
 
-  onEditorChange() {
-    this.setState();
+  onMenuClick(item) {
+    this.selectItem(item.key);
   }
 
-  onMenuClick(item) {
+  selectItem(id) {
     const { location } = this.props;
-    location.assign(`#${item.key}`);
-    this.setState({ selectedMenuItem: item.key });
+    location.assign(`#${id}`);
+
+    const selectedMenuItem = id;
+    let selectedObject;
+
+    if (selectedMenuItem.indexOf('@local/') === 0) {
+      selectedObject = localList.get(selectedMenuItem.replace('@local/', ''));
+    } else {
+      selectedObject = list.reduce((o, c) => (c.id === selectedMenuItem ? c : o));
+    }
+
+    this.setState({ selectedMenuItem, selectedObject });
   }
 
   render() {
-    const { selectedMenuItem } = this.state;
-
-    const { code, data } = list.reduce((o, c) => (c.id === selectedMenuItem ? c : o));
+    const { selectedMenuItem, selectedObject } = this.state;
 
     return (
       <div className="app">
@@ -54,7 +90,7 @@ class App extends Component {
             mode="inline"
             onClick={this.onMenuClick}
             defaultOpenKeys={['defaults', 'custom']}
-            defaultSelectedKeys={[selectedMenuItem]}
+            selectedKeys={[selectedMenuItem]}
           >
             <Menu.SubMenu
               key="defaults"
@@ -76,7 +112,7 @@ class App extends Component {
                 </span>
                 )}
             >
-              <Menu.Item key="todo">TODO</Menu.Item>
+              {localList.list().map(item => <Menu.Item key={`@local/${item.id}`}>{item.title}</Menu.Item>)}
             </Menu.SubMenu>
           </Menu>
         </div>
@@ -90,12 +126,12 @@ class App extends Component {
               selectOnLineNumbers: true,
               automaticLayout: true,
             }}
-            value={code}
+            value={selectedObject.code}
             onChange={this.onEditorChange}
           />
         </div>
         <div className="module">
-          <RenderingArea code={code} data={data} />
+          <RenderingArea code={selectedObject.code} data={selectedObject.data} />
         </div>
       </div>
     );

@@ -6,10 +6,58 @@ import runScript from 'run-script';
 
 import './rendering-area.css';
 
+import debounce from '../../core/generic/debounce';
+
 let prevCode;
 let prevDataScript;
 let prevSettings;
 let prevData;
+
+const debouncedProcess = debounce((props) => {
+  const {
+    code, dataScript, pic, message,
+  } = props;
+
+  let doRun = false;
+  let data = prevData;
+  let settings = prevSettings;
+
+  if (code !== prevCode) {
+    doRun = true;
+    settings = runScript(code);
+  }
+  if (dataScript !== prevDataScript) {
+    doRun = true;
+    data = runScript(dataScript);
+  }
+
+  if (!doRun) {
+    return;
+  }
+
+  if (message && message.current) {
+    if (settings && settings.error) {
+      message.current.innerHTML = `Settings error: ${settings.error.name}`;
+    } else if (data && data.error) {
+      message.current.innerHTML = `Data error: ${data.error.name}`;
+    } else {
+      const result = runScript('picasso.update({ data, settings })', {
+        data, settings, picasso: pic,
+      });
+
+      if (result && result.error) {
+        message.current.innerHTML = `Rendering error: ${result.error.name}`;
+      } else {
+        message.current.innerHTML = 'Success';
+      }
+    }
+  }
+
+  prevCode = code;
+  prevSettings = settings;
+  prevDataScript = dataScript;
+  prevData = data;
+}, 200);
 
 class RenderingArea extends Component {
   constructor(...props) {
@@ -35,42 +83,11 @@ class RenderingArea extends Component {
       return;
     }
 
-    const { code, data: dataScript } = this.props;
-    let doRun = false;
-    let data = prevData;
-    let settings = prevSettings;
+    const { code, data } = this.props;
 
-    if (code !== prevCode) {
-      doRun = true;
-      settings = runScript(code);
-    }
-    if (dataScript !== prevDataScript) {
-      doRun = true;
-      data = runScript(dataScript);
-    }
-
-    if (!doRun) {
-      return;
-    }
-
-    const result = runScript('picasso.update({ data, settings })', {
-      data, settings, picasso: this.pic,
+    debouncedProcess({
+      code, dataScript: data, pic: this.pic, message: this.message,
     });
-
-    if (this.message && this.message.current) {
-      if (result && result.error) {
-        this.message.current.innerHTML = `Error: ${result.error.name}`;
-      } else if (data && data.error) {
-        this.message.current.innerHTML = `Data error: ${data.error.name}`;
-      } else {
-        this.message.current.innerHTML = 'Sucess';
-      }
-    }
-
-    prevCode = code;
-    prevSettings = settings;
-    prevDataScript = dataScript;
-    prevData = data;
   }
 
   render() {
