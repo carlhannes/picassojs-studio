@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './App.css';
 
-import MonacoEditor from 'react-monaco-editor';
 import { Menu, Icon } from 'antd';
 
 import list from './examples';
@@ -10,6 +9,7 @@ import localList from './core/local-repo';
 import prompt from './core/prompt';
 
 import RenderingArea from './components/rendering-area/rendering-area';
+import EditorArea from './components/editor-area/editor-area';
 
 class App extends Component {
   constructor(...props) {
@@ -41,15 +41,20 @@ class App extends Component {
     this.selectItem(selectedMenuItem);
   }
 
-  onEditorChange(code) {
+  onEditorChange({ code: inputCode, data: inputData }) {
     const { selectedMenuItem, selectedObject } = this.state;
+    const { code, data } = {
+      code: inputCode || selectedObject.code,
+      data: inputData || selectedObject.data,
+    };
 
     if (selectedMenuItem.indexOf('@local/') === 0) {
-      localList.update({ id: selectedMenuItem.replace('@local/', ''), code });
+      localList.update({ id: selectedMenuItem.replace('@local/', ''), code, data });
       this.setState({
         selectedObject: {
           ...selectedObject,
           code,
+          data,
         },
       });
     } else {
@@ -137,16 +142,9 @@ class App extends Component {
           </Menu>
         </div>
         <div className="module">
-          <MonacoEditor
-            width="100%"
-            height="100%"
-            language="javascript"
-            theme="vs-dark"
-            options={{
-              selectOnLineNumbers: true,
-              automaticLayout: true,
-            }}
-            value={selectedObject.code}
+          <EditorArea
+            code={selectedObject.code}
+            data={selectedObject.data}
             onChange={this.onEditorChange}
           />
         </div>
