@@ -1,6 +1,8 @@
 # [picassojs.studio](http://picassojs.studio) ALPHA 
 This is a hobby project and far from perfect,
-but hey, it _should work_! Just check out the link above or follow instructions for using it locally:
+but hey, it _should work_! Just check out the link above or follow instructions for using it locally.
+
+![screenshot](screenshot.png)
 
 ### How do i use this locally?
 1. Clone the repo
