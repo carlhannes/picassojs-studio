@@ -1,0 +1,27 @@
+div.rendering-wrapper {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+div.rendering-wrapper div.rendering-area {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 37px;
+}
+
+div.rendering-wrapper div.message-wrapper {
+  display: flex;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 37px;
+  padding: 5px 10px;
+  background: #1E1E1E;
+  color: rgba(255, 255, 255, 0.65);
+}

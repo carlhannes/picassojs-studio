@@ -1,0 +1,28 @@
+html, body {
+  font-size: 0;
+}
+
+body p, h1, h2, h3, h4 {
+  font-size: initial;
+}
+
+.app {
+  display: flex;
+  width: 99.99vw;
+  min-height: 99.99vh;
+}
+
+.module {
+  display: flex;
+  width: 43vw;
+  height: 99.99vh;
+  overflow: hidden;
+}
+
+.module.half {
+  width: 13.99vw;
+}
+
+.module.scroll {
+  overflow-y: auto !important;
+}
