@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable global-require */
 
 const fs = require('fs');
 const path = require('path');
@@ -16,12 +16,12 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
-const paths = require('./paths');
-const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin-alt');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
-
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const getClientEnvironment = require('./env');
+const paths = require('./paths');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -63,7 +63,7 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
       loader: MiniCssExtractPlugin.loader,
       options: Object.assign(
         {},
-        shouldUseRelativeAssetPaths ? { publicPath: '../../' } : undefined
+        shouldUseRelativeAssetPaths ? { publicPath: '../../' } : undefined,
       ),
     },
     {
@@ -124,12 +124,11 @@ module.exports = {
     filename: 'static/js/[name].[chunkhash:8].js',
     chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',
     // We inferred the "public path" (such as / or /my-project) from homepage.
-    publicPath: publicPath,
+    publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
-      path
-        .relative(paths.appSrc, info.absoluteResourcePath)
-        .replace(/\\/g, '/'),
+    devtoolModuleFilenameTemplate: info => path
+      .relative(paths.appSrc, info.absoluteResourcePath)
+      .replace(/\\/g, '/'),
   },
   optimization: {
     minimizer: [
@@ -180,13 +179,13 @@ module.exports = {
           parser: safePostCssParser,
           map: shouldUseSourceMap
             ? {
-                // `inline: false` forces the sourcemap to be output into a
-                // separate file
-                inline: false,
-                // `annotation: true` appends the sourceMappingURL to the end of
-                // the css file, helping the browser find the sourcemap
-                annotation: true,
-              }
+              // `inline: false` forces the sourcemap to be output into a
+              // separate file
+              inline: false,
+              // `annotation: true` appends the sourceMappingURL to the end of
+              // the css file, helping the browser find the sourcemap
+              annotation: true,
+            }
             : false,
         },
       }),
@@ -209,7 +208,7 @@ module.exports = {
     // https://github.com/facebook/create-react-app/issues/253
     modules: ['node_modules'].concat(
       // It is guaranteed to exist because we tweak it in `env.js`
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
+      process.env.NODE_PATH.split(path.delimiter).filter(Boolean),
     ),
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
@@ -260,7 +259,7 @@ module.exports = {
             options: {
               formatter: require.resolve('react-dev-utils/eslintFormatter'),
               eslintPath: require.resolve('eslint'),
-              
+
             },
             loader: require.resolve('eslint-loader'),
           },
@@ -291,9 +290,9 @@ module.exports = {
             loader: require.resolve('babel-loader'),
             options: {
               customize: require.resolve(
-                'babel-preset-react-app/webpack-overrides'
+                'babel-preset-react-app/webpack-overrides',
               ),
-              
+
               plugins: [
                 [
                   require.resolve('babel-plugin-named-asset-import'),
@@ -305,6 +304,7 @@ module.exports = {
                     },
                   },
                 ],
+                ['import', { libraryName: 'antd', libraryDirectory: 'es', style: 'css' }],
               ],
               cacheDirectory: true,
               // Save disk space when time isn't as important
@@ -331,7 +331,7 @@ module.exports = {
               cacheDirectory: true,
               // Save disk space when time isn't as important
               cacheCompression: true,
-              
+
               // If an error happens in a package, it's possible to be
               // because it was compiled. Thus, we don't want the browser
               // debugger to show the original code. Instead, the code
@@ -342,7 +342,8 @@ module.exports = {
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
           // `MiniCSSExtractPlugin` extracts styles into CSS
-          // files. If you use code splitting, async bundles will have their own separate CSS chunk file.
+          // files. If you use code splitting,
+          // async bundles will have their own separate CSS chunk file.
           // By default we support CSS Modules with the extension .module.css
           {
             test: cssRegex,
@@ -381,7 +382,7 @@ module.exports = {
                 importLoaders: 2,
                 sourceMap: shouldUseSourceMap,
               },
-              'sass-loader'
+              'sass-loader',
             ),
             // Don't consider CSS imports dead code even if the
             // containing package claims to have no side effects.
@@ -400,7 +401,7 @@ module.exports = {
                 modules: true,
                 getLocalIdent: getCSSModuleLocalIdent,
               },
-              'sass-loader'
+              'sass-loader',
             ),
           },
           // "file" loader makes sure assets end up in the `build` folder.
@@ -425,6 +426,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new MonacoWebpackPlugin(),
     // Generates an `index.html` file with the <script> injected.
     new HtmlWebpackPlugin({
       inject: true,
@@ -444,8 +446,8 @@ module.exports = {
     }),
     // Inlines the webpack runtime script. This script is too small to warrant
     // a network request.
-    shouldInlineRuntimeChunk &&
-      new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
+    shouldInlineRuntimeChunk
+      && new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
     // Makes some environment variables available in index.html.
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
@@ -471,7 +473,7 @@ module.exports = {
     // having to parse `index.html`.
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
-      publicPath: publicPath,
+      publicPath,
     }),
     // Moment.js is an extremely popular library that bundles large locale files
     // by default due to how Webpack interprets its code. This is a practical
@@ -485,7 +487,7 @@ module.exports = {
       clientsClaim: true,
       exclude: [/\.map$/, /asset-manifest\.json$/],
       importWorkboxFrom: 'cdn',
-      navigateFallback: publicUrl + '/index.html',
+      navigateFallback: `${publicUrl}/index.html`,
       navigateFallbackBlacklist: [
         // Exclude URLs starting with /_, as they're likely an API call
         new RegExp('^/_'),
@@ -495,8 +497,8 @@ module.exports = {
       ],
     }),
     // TypeScript type checking
-    fs.existsSync(paths.appTsConfig) &&
-      new ForkTsCheckerWebpackPlugin({
+    fs.existsSync(paths.appTsConfig)
+      && new ForkTsCheckerWebpackPlugin({
         typescript: resolve.sync('typescript', {
           basedir: paths.appNodeModules,
         }),
