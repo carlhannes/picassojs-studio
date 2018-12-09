@@ -5,7 +5,7 @@ if (!storage.customexamples) {
   storage.customexamples = [];
 }
 
-const examples = storage.customexamples;
+let examples = storage.customexamples;
 
 function slugify(text) {
   return nodeSlug(text.toLowerCase());
@@ -13,6 +13,10 @@ function slugify(text) {
 
 const localRepo = {
   list: () => {
+    // Since examples is a proxied array,
+    // rebuild it as an actual array
+    // to let react/ant handle it like a real array
+    // this is not very performant however... but oh well :)
     const arr = [];
     for (let i = 0; i < examples.length; i += 1) {
       arr.push({ ...examples[i] });
@@ -88,6 +92,19 @@ const localRepo = {
       }
     }
     return false;
+  },
+
+  delete: (id) => {
+    // Since we can't slice proxies we need to rebuild the array
+    const arr = [];
+    for (let i = 0; i < examples.length; i += 1) {
+      if (examples[i].id !== id) {
+        arr.push({ ...examples[i] });
+      }
+    }
+    storage.customexamples = arr;
+    examples = storage.customexamples;
+    return true;
   },
 };
 

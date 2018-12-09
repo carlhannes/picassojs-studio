@@ -7,6 +7,7 @@ import { Menu, Icon } from 'antd';
 import list from './examples';
 import localList from './core/local-repo';
 import prompt from './core/prompt';
+import confirm from './core/confirm';
 
 import RenderingArea from './components/rendering-area/rendering-area';
 import EditorArea from './components/editor-area/editor-area';
@@ -87,6 +88,12 @@ class App extends Component {
             newSelectedObject = result;
           }
         });
+      } else if (newSelectedMenuItem === '@action/delete') {
+        confirm('Are you sure you want to delete this item?', (result) => {
+          if (result) {
+            localList.delete(selectedMenuItem.replace('@local/', ''));
+          }
+        });
       }
 
       newSelectedMenuItem = selectedMenuItem;
@@ -137,6 +144,11 @@ class App extends Component {
                 <Icon type="plus" />
                 {' '}
                 Create new
+              </Menu.Item>
+              <Menu.Item key="@action/delete">
+                <Icon type="delete" />
+                {' '}
+                Delete selected
               </Menu.Item>
             </Menu.SubMenu>
           </Menu>
