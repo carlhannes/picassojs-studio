@@ -2,6 +2,7 @@ git fetch
 git checkout master
 git pull
 git branch -D gh-pages
+npm run build
 git add build -f
 git commit -m "publish gh-pages"
 git subtree split --prefix output -b gh-pages
