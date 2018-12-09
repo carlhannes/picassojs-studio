@@ -1,3 +1,6 @@
+git fetch origin
+git checkout gh-pages 
+git pull origin gh-pages
 git checkout master
 git add build -f
 git commit -m "publish gh-pages"
