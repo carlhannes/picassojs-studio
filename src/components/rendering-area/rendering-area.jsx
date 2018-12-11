@@ -1,3 +1,5 @@
+/* global window */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -59,6 +61,12 @@ const debouncedProcess = debounce((props) => {
   prevData = data;
 }, 200);
 
+const debouncedResize = debounce(({ pic }) => {
+  runScript('picasso.update()', {
+    picasso: pic,
+  });
+}, 50);
+
 class RenderingArea extends Component {
   constructor(...props) {
     super(...props);
@@ -66,16 +74,23 @@ class RenderingArea extends Component {
     this.message = React.createRef();
 
     this.processPicasso = this.processPicasso.bind(this);
+    this.resize = this.resize.bind(this);
   }
 
   componentDidMount() {
     this.pic = runScript('return picasso.chart({ element })', { picasso, element: this.element.current });
     this.processPicasso();
+    window.addEventListener('resize', this.resize);
   }
 
   componentWillUnmount() {
     this.pic.destroy();
     this.pic = undefined;
+    window.removeEventListener('resize', this.resize);
+  }
+
+  resize() {
+    debouncedResize({ pic: this.pic });
   }
 
   processPicasso() {
