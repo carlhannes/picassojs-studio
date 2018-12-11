@@ -4,11 +4,20 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import picasso from 'picasso.js';
+import picQ from 'picasso-plugin-q';
+import picHammer from 'picasso-plugin-hammer';
+
+import enigma from 'enigma.js';
+import enigmaSchema from 'enigma.js/schemas/12.20.0.json';
+
 import runScript from 'run-script';
 
 import './rendering-area.css';
-
 import debounce from '../../core/generic/debounce';
+
+// Use picasso plugins
+picasso.use(picQ);
+picasso.use(picHammer);
 
 let prevCode;
 let prevDataScript;
@@ -26,7 +35,11 @@ const debouncedProcess = debounce((props) => {
 
   if (code !== prevCode) {
     doRun = true;
-    settings = runScript(code);
+    settings = runScript(code, {
+      picasso: pic,
+      enigma,
+      enigmaSchema,
+    });
   }
   if (dataScript !== prevDataScript) {
     doRun = true;
