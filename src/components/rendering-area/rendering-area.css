@@ -25,3 +25,9 @@ div.rendering-wrapper div.message-wrapper {
   background: #1E1E1E;
   color: rgba(255, 255, 255, 0.65);
 }
+
+
+div.rendering-wrapper p.picasso-version {
+  position: absolute;
+  right: 15px;
+}

@@ -129,6 +129,10 @@ class RenderingArea extends Component {
         />
         <div className="message-wrapper">
           <p ref={this.message}>Loading...</p>
+          <p className="picasso-version">
+            picasso.js v
+            {picasso.version}
+          </p>
         </div>
       </div>
     );
