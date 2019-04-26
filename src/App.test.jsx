@@ -2,8 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
+jest.mock('./examples/index.js');
+jest.mock('./components/editor-area/editor-area.jsx');
+
+const location = {
+  hash: '#',
+  assign: jest.fn(),
+};
+
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
+  ReactDOM.render(<App location={location} />, div);
   ReactDOM.unmountComponentAtNode(div);
+  expect(location.assign).toBeCalledWith('#bar-chart');
 });
