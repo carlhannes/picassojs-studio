@@ -30,7 +30,7 @@
     "jest-pnp-resolver": "1.0.1",
     "jest-resolve": "23.6.0",
     "mini-css-extract-plugin": "0.6.0",
-    "monaco-editor": "0.15.6",
+    "monaco-editor": "0.16.2",
     "monaco-editor-webpack-plugin": "1.7.0",
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "picasso-plugin-hammer": "0.25.0",
