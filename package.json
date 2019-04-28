@@ -16,7 +16,7 @@
     "chalk": "2.4.2",
     "css-loader": "1.0.1",
     "dotenv": "6.2.0",
-    "dotenv-expand": "4.2.0",
+    "dotenv-expand": "5.1.0",
     "enigma.js": "2.4.0",
     "eslint-config-react-app": "3.0.8",
     "eslint-loader": "2.1.2",
