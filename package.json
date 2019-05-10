@@ -1,6 +1,6 @@
 {
   "name": "picassojs-studio",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "dependencies": {
     "@babel/core": "7.4.4",
@@ -33,9 +33,9 @@
     "monaco-editor": "0.16.2",
     "monaco-editor-webpack-plugin": "1.7.0",
     "optimize-css-assets-webpack-plugin": "5.0.1",
-    "picasso-plugin-hammer": "0.25.0",
-    "picasso-plugin-q": "0.25.0",
-    "picasso.js": "0.25.0",
+    "picasso-plugin-hammer": "0.25.2",
+    "picasso-plugin-q": "0.25.2",
+    "picasso.js": "0.25.2",
     "pnp-webpack-plugin": "1.4.3",
     "postcss-flexbugs-fixes": "4.1.0",
     "postcss-loader": "3.0.0",
