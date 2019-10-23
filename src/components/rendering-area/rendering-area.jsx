@@ -27,6 +27,11 @@ let prevDataScript;
 let prevSettings;
 let prevData;
 
+const logError = (...params) => {
+  // eslint-disable-next-line no-console
+  console.error(...params);
+};
+
 class RenderingArea extends Component {
   debouncedProcess = debounce((props) => {
     const {
@@ -38,7 +43,7 @@ class RenderingArea extends Component {
     let settings = prevSettings;
 
     if (code !== prevCode) {
-      // this.reboot();
+      this.reboot();
       doRun = true;
       settings = runScript(code, {
         picasso: this.pic,
@@ -63,10 +68,10 @@ class RenderingArea extends Component {
     if (message && message.current) {
       if (settings && settings.error) {
         message.current.innerHTML = `Settings error: ${settings.error.name}`;
-        console.error(settings.error);
+        logError(settings.error);
       } else if (data && data.error) {
         message.current.innerHTML = `Data error: ${data.error.name}`;
-        console.error(data.error);
+        logError(data.error);
       } else {
         const result = runScript('picasso.update({ data, settings })', {
           data, settings, picasso: this.pic,
@@ -74,7 +79,7 @@ class RenderingArea extends Component {
 
         if (result && result.error) {
           message.current.innerHTML = `Rendering error: ${result.error.name}`;
-          console.error(result.error);
+          logError(result.error);
         } else {
           message.current.innerHTML = 'Success';
         }
