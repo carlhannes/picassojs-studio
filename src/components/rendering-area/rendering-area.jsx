@@ -26,6 +26,41 @@ let prevCode;
 let prevDataScript;
 let prevSettings;
 let prevData;
+let prevItem = '';
+
+function setStatusOK({
+  node, message, details,
+}) {
+  const { current } = node;
+
+  if (!current) {
+    return;
+  }
+
+  current.innerHTML = `<h1>${message}</h1> <p>${details || 'No details available'}</p>`;
+  current.className = '';
+}
+
+function setStatusError({
+  node, message, stack,
+}) {
+  const { current } = node;
+
+  if (!current) {
+    return;
+  }
+
+  let msg = `<h1>${message}</h1>`;
+
+  if (stack) {
+    msg += `<code class="stack">${stack.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>`;
+  }
+
+  if (!window.preventError) {
+    current.innerHTML = msg;
+    current.className = 'error';
+  }
+}
 
 const logError = (...params) => {
   // eslint-disable-next-line no-console
@@ -35,7 +70,7 @@ const logError = (...params) => {
 class RenderingArea extends Component {
   debouncedProcess = debounce((props) => {
     const {
-      code, dataScript, message,
+      selectedMenuItem, code, dataScript, message,
     } = props;
 
     let doRun = false;
@@ -43,7 +78,10 @@ class RenderingArea extends Component {
     let settings = prevSettings;
 
     if (code !== prevCode) {
-      this.reboot();
+      if (selectedMenuItem !== prevItem) {
+        this.reboot();
+        prevItem = selectedMenuItem;
+      }
       doRun = true;
       settings = runScript(code, {
         picasso: this.pic,
@@ -67,10 +105,10 @@ class RenderingArea extends Component {
 
     if (message && message.current) {
       if (settings && settings.error) {
-        message.current.innerHTML = `Settings error: ${settings.error.name}`;
+        setStatusError({ node: message, message: `Settings error: ${settings.error.message}`, stack: settings.error.stack });
         logError(settings.error);
       } else if (data && data.error) {
-        message.current.innerHTML = `Data error: ${data.error.name}`;
+        setStatusError({ node: message, message: `Data error: ${data.error.message}`, stack: data.error.stack });
         logError(data.error);
       } else {
         const result = runScript('picasso.update({ data, settings })', {
@@ -78,10 +116,10 @@ class RenderingArea extends Component {
         });
 
         if (result && result.error) {
-          message.current.innerHTML = `Rendering error: ${result.error.name}`;
+          setStatusError({ node: message, message: `Rendering error: ${result.error.message}`, stack: result.error.stack });
           logError(result.error);
         } else {
-          message.current.innerHTML = 'Success';
+          setStatusOK({ node: message, message: 'Success <small>(hover to see details on error)</small>' });
         }
       }
     }
@@ -134,10 +172,10 @@ class RenderingArea extends Component {
       return;
     }
 
-    const { code, data } = this.props;
+    const { code, data, selectedMenuItem } = this.props;
 
     this.debouncedProcess({
-      code, dataScript: data, pic: this.pic, message: this.message,
+      code, dataScript: data, pic: this.pic, message: this.message, selectedMenuItem,
     });
   }
 
@@ -151,7 +189,9 @@ class RenderingArea extends Component {
           className="rendering-area"
         />
         <div className="message-wrapper">
-          <p ref={this.message}>Loading...</p>
+          <div className="message-container">
+            <p ref={this.message}>Loading...</p>
+          </div>
           <p className="picasso-version">
             picasso.js v
             {picasso.version}
@@ -165,6 +205,7 @@ class RenderingArea extends Component {
 RenderingArea.propTypes = {
   code: PropTypes.string.isRequired,
   data: PropTypes.string.isRequired,
+  selectedMenuItem: PropTypes.string.isRequired,
 };
 
 export default RenderingArea;
