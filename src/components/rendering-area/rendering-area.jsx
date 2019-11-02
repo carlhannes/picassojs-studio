@@ -77,6 +77,15 @@ class RenderingArea extends Component {
     let data = prevData;
     let settings = prevSettings;
 
+    if (dataScript !== prevDataScript) {
+      doRun = true;
+      data = runScript(dataScript, {
+        picasso: this.pic,
+        enigma,
+        enigmaSchema,
+        quickHypercube,
+      });
+    }
     if (code !== prevCode) {
       if (selectedMenuItem !== prevItem) {
         this.reboot();
@@ -87,15 +96,7 @@ class RenderingArea extends Component {
         picasso: this.pic,
         enigma,
         enigmaSchema,
-      });
-    }
-    if (dataScript !== prevDataScript) {
-      doRun = true;
-      data = runScript(dataScript, {
-        picasso: this.pic,
-        enigma,
-        enigmaSchema,
-        quickHypercube,
+        data,
       });
     }
 
