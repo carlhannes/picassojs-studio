@@ -19,18 +19,28 @@ var settings = {
     type: 'hammer',
     gestures: [{
       type: 'Pan',
+      options: {
+        event: 'range'
+      },
       events: {
-        panstart: function onPanStart(e) {
-          this.chart.component('lasso').emit('lassoStart', e);
+        rangestart: function start(e) {
+          if (e.direction === 2 || e.direction === 4) {
+            rangeRef = 'rangeX';
+          } else {
+            rangeRef = 'rangeY';
+          }
+
+          this.chart.component(rangeRef).emit('rangeStart', e);
         },
-        pan: function onPan(e) {
-          this.chart.component('lasso').emit('lassoMove', e);
+        rangemove: function move(e) {
+          this.chart.component(rangeRef).emit('rangeMove', e);
         },
-        panend: function onPanEnd(e) {
-          this.chart.component('lasso').emit('lassoEnd', e);
+        rangeend: function end(e) {
+          this.chart.component(rangeRef).emit('rangeEnd', e);
         }
       }
-    }]
+    }
+    ]
   }],
   components: [{
     scale: 'y',
@@ -43,7 +53,6 @@ var settings = {
     dock: 'bottom',
     key: 'x-axis'
   }, {
-    key: 'pm',
     type: 'point-marker',
     data: {
       extract: {
@@ -83,16 +92,34 @@ var settings = {
       size: { scale: { data: { field: 'qMeasureInfo/2' } } },
       fill: { ref: 'color', scale: { data: { field: 'qMeasureInfo/0' }, type: 'color' } }
     }
-  }, {
-    key: 'lasso',
-    type: 'brush-lasso',
+  },
+  {
+    type: 'brush-range',
+    key: 'rangeY',
     settings: {
-      brush: {
-        components: [{
-          key: 'pm',
-          contexts: ['highlight'],
-          action: 'add'
-        }]
+      brush: 'highlight',
+      direction: 'vertical',
+      scale: 'y',
+      target: {
+        component: 'y-axis'
+      },
+      bubbles: {
+        align: 'end'
+      }
+    }
+  },
+  {
+    type: 'brush-range',
+    key: 'rangeX',
+    settings: {
+      brush: 'highlight',
+      direction: 'horizontal',
+      scale: 'x',
+      target: {
+        component: 'x-axis'
+      },
+      bubbles: {
+        align: 'start'
       }
     }
   }]
@@ -114,8 +141,8 @@ return quickHypercube({
 `;
 
 const item = {
-  id: 'brush-lasso',
-  title: 'Brushing - lasso',
+  id: 'brush-range',
+  title: 'Brushing - range',
   code,
   data,
 };

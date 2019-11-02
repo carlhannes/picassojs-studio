@@ -111,7 +111,7 @@ return settings;
 `;
 
 const data = `
-var teamData = quickHypercube.customGenerator.generateTeamNameData({
+return quickHypercube({
   dimensions: 4,
   measures: 3,
   rows: 150,
@@ -122,16 +122,6 @@ var teamData = quickHypercube.customGenerator.generateTeamNameData({
   uniqueTeamNames: 5,
   uniqueAbbr: 10
 });
-
-var qLayout = quickHypercube.hypercubeGenerator.generateDataFromArray(teamData);
-
-var data = [{
-  type: 'q',
-  key: 'qHyperCube',
-  data: qLayout.qHyperCube
-}];
-
-return data;
 `;
 
 const item = {
