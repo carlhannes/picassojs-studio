@@ -1,12 +1,13 @@
-# [picassojs.studio](https://picassojs.studio) ALPHA 
-This is a hobby project and far from perfect,
-but hey, it _should work_! Just check out the link above or follow instructions for using it locally.
+# [picassojs.studio](https://picassojs.studio) 
+The picassojs.studio website is a custom code playground/sandbox for creating visualizations using [the picasso.js visualization framework](https://picassojs.com) - it's inspired by an internal tool, picasso-sandbox, that I created while we developed picasso.js.
+
+It's real time and updates itself, designed to streamline how to create graphs. It has a Code tab and a Data tab. The result of the "Code" tab is passed to picasso.js as the "settings", and the result of the "data" tab is passed into picasso.js as the "data". 
 
 ![screenshot](screenshot.png)
 
 ### How do i use this locally?
 1. Clone the repo
-2. Run `npm i && npm start`
+2. Run `yarn && yarn start`
 3. Have fun!
 
 ### Can i use a linked version of picasso.js?
