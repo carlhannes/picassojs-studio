@@ -59,7 +59,7 @@ function EditorArea({
     <div className="style-tab-modifier">
       <Paper position="static" square>
         <Tabs value={selectedTabPane} onChange={tabChange} style={{ height: '50px' }}>
-          <Tab label="Code" />
+          <Tab label="Settings" />
           <Tab label="Data" />
           <Tab icon={<DeleteIcon />} value="delete" style={{ marginLeft: 'auto', minWidth: '80px' }} />
         </Tabs>
