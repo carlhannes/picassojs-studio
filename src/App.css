@@ -47,6 +47,8 @@
 }
 
 .bottom.fullscreen {
+  position: absolute;
+  bottom: 0;
   height: 48px;
   display: flex;
   width: 99.99vw;
