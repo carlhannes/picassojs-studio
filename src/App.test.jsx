@@ -4,6 +4,7 @@ import App from './App';
 
 jest.mock('./examples/index.js');
 jest.mock('./components/editor-area/editor-area.jsx');
+jest.mock('./core/generic/touch.js');
 
 const location = {
   hash: '#',
