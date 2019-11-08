@@ -5,7 +5,9 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
+
 import DeleteIcon from '@material-ui/icons/Delete';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 import MonacoEditor from 'react-monaco-editor';
 
@@ -43,13 +45,17 @@ TabPanel.defaultProps = {
 
 
 function EditorArea({
-  code, data, onChange, onDelete,
+  code, data, onChange, onDelete, toggleFullscreen,
 }) {
   const [selectedTabPane, setSelectedTabPane] = React.useState(0);
 
   const tabChange = (event, newValue) => {
     if (newValue === 'delete') {
       onDelete();
+      return;
+    }
+    if (newValue === 'fullscreen') {
+      toggleFullscreen();
       return;
     }
     setSelectedTabPane(newValue);
@@ -61,7 +67,8 @@ function EditorArea({
         <Tabs value={selectedTabPane} onChange={tabChange} style={{ height: '50px' }}>
           <Tab label="Settings" />
           <Tab label="Data" />
-          <Tab icon={<DeleteIcon />} value="delete" style={{ marginLeft: 'auto', minWidth: '80px' }} />
+          <Tab icon={<DeleteIcon />} value="delete" style={{ marginLeft: 'auto', minWidth: '50px' }} />
+          <Tab icon={<FullscreenIcon />} value="fullscreen" style={{ minWidth: '50px' }} />
         </Tabs>
       </Paper>
       <TabPanel value={selectedTabPane} index={0}>
@@ -101,6 +108,7 @@ EditorArea.propTypes = {
   data: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
+  toggleFullscreen: PropTypes.func.isRequired,
 };
 
 export default EditorArea;
