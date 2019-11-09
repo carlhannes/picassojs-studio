@@ -21,8 +21,9 @@
   overflow-y: auto !important;
 }
 
-.app.fullscreen {
-  height: calc(99.99vh - 48px);
+.app.fullscreen { 
+  overflow: hidden;
+  position: relative;
 }
 
 .app.fullscreen .module {
