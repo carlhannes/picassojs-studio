@@ -23,14 +23,17 @@
 
 .app.fullscreen { 
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  height: auto;
+  top: 0;
+  bottom: 48px;
 }
 
 .app.fullscreen .module {
   position: absolute;
   left: 100vw;
   top: 0;
-  bottom: 48px;
+  bottom: 0;
   height: auto;
   display: block;
   width: 99.99vw;
