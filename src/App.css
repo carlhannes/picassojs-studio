@@ -1,13 +1,13 @@
 .app {
   display: flex;
   width: 99.99vw;
-  min-height: 99.99vh;
+  height: 99.99vh;
 }
 
 .module {
   display: flex;
   width: 43vw;
-  height: 99.99vh;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -19,4 +19,41 @@
 
 .module.scroll {
   overflow-y: auto !important;
+}
+
+.app.fullscreen { 
+  overflow: hidden;
+  position: absolute;
+  height: auto;
+  top: 0;
+  bottom: 48px;
+}
+
+.app.fullscreen .module {
+  position: absolute;
+  left: 100vw;
+  top: 0;
+  bottom: 0;
+  height: auto;
+  display: block;
+  width: 99.99vw;
+}
+
+.app.fullscreen .module.active {
+  position: absolute;
+  left: 0;
+  display: block;
+  width: 99.99vw;
+}
+
+.bottom {
+  display: none;
+}
+
+.bottom.fullscreen {
+  position: absolute;
+  bottom: 0;
+  height: 48px;
+  display: flex;
+  width: 99.99vw;
 }

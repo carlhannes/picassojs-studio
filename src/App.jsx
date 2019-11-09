@@ -6,6 +6,13 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
+import Paper from '@material-ui/core/Paper';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+
+import ListIcon from '@material-ui/icons/List';
+import CodeIcon from '@material-ui/icons/Code';
+import ImageIcon from '@material-ui/icons/Image';
 
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -18,6 +25,7 @@ import list from './examples';
 import localList from './core/local-repo';
 import prompt from './core/prompt';
 import confirm from './core/confirm';
+import isTouchDevice from './core/generic/touch';
 
 import RenderingArea from './components/rendering-area/rendering-area';
 import EditorArea from './components/editor-area/editor-area';
@@ -38,6 +46,8 @@ class App extends Component {
       selectedMenuItem: location.hash.replace('#', '') || list[0].id,
       defaultExamplesOpen: true,
       localExamplesOpen: true,
+      fullscreenEnabled: isTouchDevice(),
+      fullscreenState: 'list',
     };
 
     const { selectedMenuItem } = this.state;
@@ -122,13 +132,18 @@ class App extends Component {
 
   render() {
     const {
-      defaultExamplesOpen, localExamplesOpen, selectedObject, selectedMenuItem,
+      defaultExamplesOpen,
+      localExamplesOpen,
+      selectedObject,
+      selectedMenuItem,
+      fullscreenEnabled,
+      fullscreenState,
     } = this.state;
 
     return (
       <ThemeProvider theme={theme}>
-        <div className="app">
-          <div className="module half scroll">
+        <div className={`app ${fullscreenEnabled ? 'fullscreen' : ''}`}>
+          <div className={`module half scroll ${fullscreenState === 'list' ? 'active' : ''}`}>
             <List disablePadding component="nav" style={{ width: '100%' }}>
               <ListItem
                 button
@@ -185,24 +200,38 @@ class App extends Component {
                   </ListItem>
                 </List>
               </Collapse>
-
             </List>
           </div>
-          <div className="module">
+          <div className={`module ${fullscreenState === 'code' ? 'active' : ''}`}>
             <EditorArea
               code={selectedObject.code}
               data={selectedObject.data}
               onChange={this.onEditorChange}
               onDelete={this.deleteCurrent}
+              toggleFullscreen={() => this.setState({ fullscreenEnabled: !fullscreenEnabled })}
             />
           </div>
-          <div className="module">
+          <div className={`module ${fullscreenState === 'rendering' ? 'active' : ''}`}>
             <RenderingArea
               selectedMenuItem={selectedMenuItem}
               code={selectedObject.code}
               data={selectedObject.data}
             />
           </div>
+        </div>
+        <div className={`bottom ${fullscreenEnabled ? 'fullscreen' : ''}`}>
+          <Paper position="static" square style={{ width: '100%' }}>
+            <Tabs
+              value={fullscreenState}
+              onChange={(e, v) => this.setState({ fullscreenState: v })}
+              variant="fullWidth"
+              style={{ width: '100%' }}
+            >
+              <Tab icon={<ListIcon />} value="list" aria-label="list" />
+              <Tab icon={<CodeIcon />} value="code" aria-label="code" />
+              <Tab icon={<ImageIcon />} value="rendering" aria-label="rendering" />
+            </Tabs>
+          </Paper>
         </div>
       </ThemeProvider>
     );
