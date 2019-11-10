@@ -48,7 +48,7 @@
     "random-seed": "0.3.0",
     "react": "16.8.6",
     "react-app-polyfill": "1.0.4",
-    "react-dev-utils": "9.0.0",
+    "react-dev-utils": "9.1.0",
     "react-dom": "16.8.6",
     "react-monaco-editor": "0.25.1",
     "resolve": "1.10.1",
