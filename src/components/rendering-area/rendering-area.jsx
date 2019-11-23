@@ -7,6 +7,7 @@ import picasso from 'picasso.js';
 import picQ from 'picasso-plugin-q';
 import 'hammerjs';
 import picHammer from 'picasso-plugin-hammer';
+import qixFaker from 'qix-faker';
 
 import enigma from 'enigma.js';
 import enigmaSchema from 'enigma.js/schemas/12.20.0.json';
@@ -84,6 +85,7 @@ class RenderingArea extends Component {
         enigma,
         enigmaSchema,
         quickHypercube,
+        qixFaker,
       });
     }
     if (code !== prevCode) {
