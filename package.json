@@ -15,7 +15,7 @@
     "bfj": "6.1.2",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
     "chalk": "2.4.2",
-    "css-loader": "2.1.1",
+    "css-loader": "3.2.0",
     "dotenv": "7.0.0",
     "dotenv-expand": "5.1.0",
     "enigma.js": "2.4.0",
