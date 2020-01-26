@@ -11,20 +11,25 @@ function slugify(text) {
   return nodeSlug(text.toLowerCase());
 }
 
+const localPrefix = '@local/';
+
 const localRepo = {
-  list: () => {
+  list: async () => {
     // Since examples is a proxied array,
     // rebuild it as an actual array
     // to let react/ant handle it like a real array
     // this is not very performant however... but oh well :)
     const arr = [];
     for (let i = 0; i < examples.length; i += 1) {
-      arr.push({ ...examples[i] });
+      arr.push({
+        ...examples[i],
+        id: `${localPrefix}${examples[i].id}`,
+      });
     }
     return arr;
   },
 
-  new: (item) => {
+  new: async (item) => {
     if (!item.title) {
       return 'No item title';
     }
@@ -42,10 +47,14 @@ const localRepo = {
 
     examples.push(newItem);
 
-    return newItem;
+    return {
+      ...newItem,
+      id: `${localPrefix}${newItem.id}`,
+    };
   },
 
-  idExists: (id) => {
+  idExists: (prefixedId) => {
+    const id = prefixedId.replace(localPrefix, '');
     for (let i = 0; i < examples.length; i += 1) {
       const cur = examples[i];
       if (cur.id === id) {
@@ -55,7 +64,7 @@ const localRepo = {
     return false;
   },
 
-  fork: (item) => {
+  fork: async (item) => {
     let tryName = `${item.title} (forked) `;
 
     if (!localRepo.idExists(slugify(tryName))) {
@@ -73,7 +82,9 @@ const localRepo = {
     return 'Could not find suitable fork name';
   },
 
-  update: (item) => {
+  update: async (updateItem) => {
+    const item = updateItem;
+    item.id = item.id.replace(localPrefix, '');
     for (let i = 0; i < examples.length; i += 1) {
       if (examples[i].id === item.id) {
         examples[i] = {
@@ -84,17 +95,19 @@ const localRepo = {
     }
   },
 
-  get: (id) => {
+  get: async (prefixedId) => {
+    const id = prefixedId.replace(localPrefix, '');
     for (let i = 0; i < examples.length; i += 1) {
       const cur = examples[i];
-      if (cur.id === id) {
+      if (cur.id === id.replace(localPrefix, '')) {
         return cur;
       }
     }
     return false;
   },
 
-  delete: (id) => {
+  delete: async (prefixedId) => {
+    const id = prefixedId.replace(localPrefix, '');
     // Since we can't slice proxies we need to rebuild the array
     const arr = [];
     for (let i = 0; i < examples.length; i += 1) {

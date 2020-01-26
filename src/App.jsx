@@ -22,7 +22,9 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
 import list from './examples';
-import localList from './core/local-repo';
+import API from './core/api/api';
+import { refresh as refreshUserState } from './core/user-state';
+import localRepo from './core/local-repo';
 import prompt from './core/prompt';
 import confirm from './core/confirm';
 import isTouchDevice from './core/generic/touch';
@@ -42,12 +44,20 @@ class App extends Component {
 
     const { location } = this.props;
 
+    if (location.pathname === '/callback') {
+      API.refreshToken(location.search.replace('?code=', ''));
+    } else {
+      refreshUserState();
+    }
+
     this.state = {
       selectedMenuItem: location.hash.replace('#', '') || list[0].id,
       defaultExamplesOpen: true,
-      localExamplesOpen: true,
+      myExamplesOpen: true,
       fullscreenEnabled: isTouchDevice(),
       fullscreenState: 'list',
+      currentRepo: localRepo,
+      examples: '',
     };
 
     const { selectedMenuItem } = this.state;
@@ -61,20 +71,24 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const { selectedMenuItem } = this.state;
+    const { currentRepo, selectedMenuItem } = this.state;
 
     this.selectItem(selectedMenuItem);
+
+    currentRepo.list().then((examples) => {
+      this.setState({ examples });
+    });
   }
 
-  onEditorChange = ({ code: inputCode, data: inputData }) => {
-    const { selectedMenuItem, selectedObject } = this.state;
+  onEditorChange = async ({ code: inputCode, data: inputData }) => {
+    const { currentRepo, selectedMenuItem, selectedObject } = this.state;
     const { code, data } = {
       code: inputCode || selectedObject.code,
       data: inputData || selectedObject.data,
     };
 
-    if (selectedMenuItem.indexOf('@local/') === 0) {
-      localList.update({ id: selectedMenuItem.replace('@local/', ''), code, data });
+    if (selectedMenuItem.indexOf('@') === 0) {
+      await currentRepo.update({ id: selectedMenuItem, code, data });
       this.setState({
         selectedObject: {
           ...selectedObject,
@@ -83,9 +97,9 @@ class App extends Component {
         },
       });
     } else {
-      const result = localList.fork(selectedObject);
+      const result = await currentRepo.fork(selectedObject);
       if (result && result.id) {
-        this.selectItem(`@local/${result.id}`);
+        this.selectItem(result.id);
       }
     }
   }
@@ -94,14 +108,15 @@ class App extends Component {
     this.selectItem(item.key);
   }
 
-  selectItem = (id) => {
+  selectItem = async (id) => {
+    const { currentRepo } = this.state;
     const { location } = this.props;
 
     const newSelectedMenuItem = id;
     let newSelectedObject;
 
-    if (newSelectedMenuItem.indexOf('@local/') === 0) {
-      newSelectedObject = localList.get(newSelectedMenuItem.replace('@local/', ''));
+    if (newSelectedMenuItem.indexOf('@') === 0) {
+      newSelectedObject = await currentRepo.get(newSelectedMenuItem);
     } else {
       newSelectedObject = list.reduce((o, c) => (c.id === newSelectedMenuItem ? c : o));
     }
@@ -110,21 +125,23 @@ class App extends Component {
     this.setState({ selectedMenuItem: newSelectedMenuItem, selectedObject: newSelectedObject });
   }
 
-  newItem = () => {
-    prompt('What do you want to name it?', 'Awesomebox', (title) => {
-      const result = localList.new({ title });
+  newItem = async () => {
+    const { currentRepo } = this.state;
+
+    prompt('What do you want to name it?', 'Awesomebox', async (title) => {
+      const result = await currentRepo.new({ title });
       if (result && result.id) {
-        this.selectItem(`@local/${result.id}`);
+        this.selectItem(result.id);
       }
     });
   }
 
-  deleteCurrent = () => {
-    const { selectedMenuItem } = this.state;
+  deleteCurrent = async () => {
+    const { currentRepo, selectedMenuItem } = this.state;
 
-    confirm('Are you sure you want to delete this item?', (result) => {
+    confirm('Are you sure you want to delete this item?', async (result) => {
       if (result) {
-        localList.delete(selectedMenuItem.replace('@local/', ''));
+        await currentRepo.delete(selectedMenuItem);
         this.selectItem(list[0].id);
       }
     });
@@ -132,8 +149,9 @@ class App extends Component {
 
   render() {
     const {
+      examples,
       defaultExamplesOpen,
-      localExamplesOpen,
+      myExamplesOpen,
       selectedObject,
       selectedMenuItem,
       fullscreenEnabled,
@@ -155,7 +173,7 @@ class App extends Component {
               </ListItem>
               <Collapse in={defaultExamplesOpen} timeout="auto" unmountOnExit>
                 <List component="div">
-                  {list.map(item => (
+                  {examples.map(item => (
                     <ListItem
                       key={item.id}
                       style={{ paddingLeft: '30px' }}
@@ -170,21 +188,21 @@ class App extends Component {
               </Collapse>
               <ListItem
                 button
-                onClick={() => this.setState({ localExamplesOpen: !localExamplesOpen })}
+                onClick={() => this.setState({ myExamplesOpen: !myExamplesOpen })}
                 style={{ borderBottom: '2px solid #F50057' }}
               >
-                <ListItemText primary="Local examples" />
-                {localExamplesOpen ? <ExpandLess /> : <ExpandMore />}
+                <ListItemText primary="My examples" />
+                {myExamplesOpen ? <ExpandLess /> : <ExpandMore />}
               </ListItem>
-              <Collapse in={localExamplesOpen} timeout="auto" unmountOnExit>
+              <Collapse in={myExamplesOpen} timeout="auto" unmountOnExit>
                 <List component="div">
-                  {localList.list().map(item => (
+                  {list.map(item => (
                     <ListItem
-                      key={`@local/${item.id}`}
+                      key={item.id}
                       style={{ paddingLeft: '30px' }}
-                      selected={`@local/${item.id}` === selectedMenuItem}
+                      selected={item.id === selectedMenuItem}
                       button
-                      onClick={() => this.selectItem(`@local/${item.id}`)}
+                      onClick={() => this.selectItem(item.id)}
                     >
                       <ListItemText primary={item.title} />
                     </ListItem>

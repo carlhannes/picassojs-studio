@@ -11,6 +11,9 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 import MonacoEditor from 'react-monaco-editor';
 
+import API from '../../core/api/api';
+import { getUser } from '../../core/user-state';
+
 import './editor-area.css';
 
 function TabPanel(props) {
@@ -48,8 +51,9 @@ function EditorArea({
   code, data, onChange, onDelete, toggleFullscreen,
 }) {
   const [selectedTabPane, setSelectedTabPane] = React.useState(0);
+  const [userState, setUserState] = React.useState(null);
 
-  const tabChange = (event, newValue) => {
+  const tabChange = async (event, newValue) => {
     if (newValue === 'delete') {
       onDelete();
       return;
@@ -58,8 +62,20 @@ function EditorArea({
       toggleFullscreen();
       return;
     }
+    if (newValue === 'login') {
+      API.login();
+    }
+    if (newValue === 'logout') {
+      API.logout();
+    }
     setSelectedTabPane(newValue);
   };
+
+  if (userState === null) {
+    getUser().then((user) => {
+      setUserState(user);
+    });
+  }
 
   return (
     <div className="style-tab-modifier">
@@ -67,6 +83,7 @@ function EditorArea({
         <Tabs value={selectedTabPane} onChange={tabChange} style={{ height: '50px' }}>
           <Tab label="Settings" />
           <Tab label="Data" />
+          {userState && userState.loggedin ? <Tab label="Logout" value="logout" /> : <Tab label="Login" value="login" />}
           <Tab icon={<DeleteIcon />} value="delete" style={{ marginLeft: 'auto', minWidth: '50px' }} />
           <Tab icon={<FullscreenIcon />} value="fullscreen" style={{ minWidth: '50px' }} />
         </Tabs>
