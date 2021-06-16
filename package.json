@@ -3,13 +3,13 @@
   "version": "0.1.5",
   "private": true,
   "dependencies": {
-    "@babel/core": "7.7.2",
+    "@babel/core": "7.14.6",
     "@material-ui/core": "4.5.2",
     "@material-ui/icons": "4.5.1",
     "@svgr/webpack": "4.2.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "24.7.1",
-    "babel-loader": "8.0.6",
+    "babel-loader": "8.2.2",
     "babel-plugin-named-asset-import": "0.3.4",
     "babel-preset-react-app": "9.0.2",
     "bfj": "6.1.2",
@@ -134,7 +134,7 @@
     ]
   },
   "devDependencies": {
-    "babel-eslint": "10.0.3",
+    "babel-eslint": "10.1.0",
     "babel-plugin-import": "1.12.2",
     "eslint": "5.16.0",
     "eslint-config-airbnb": "17.1.0",
