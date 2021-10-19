@@ -39,7 +39,7 @@
     "picasso-plugin-hammer": "0.29.2",
     "picasso-plugin-q": "0.29.2",
     "picasso.js": "0.29.2",
-    "pnp-webpack-plugin": "1.4.3",
+    "pnp-webpack-plugin": "1.7.0",
     "postcss-flexbugs-fixes": "4.1.0",
     "postcss-loader": "3.0.0",
     "postcss-preset-env": "6.6.0",
