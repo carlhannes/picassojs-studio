@@ -1,0 +1,26 @@
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listdense {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  padding: 4px 0;
+}
+
+.listitem {
+  padding: 8px 16px;
+  cursor: default;
+}
+
+.button {
+  cursor: pointer;
+}
+
+.listitemdense {
+  padding: 4px 16px;
+  cursor: default;
+}

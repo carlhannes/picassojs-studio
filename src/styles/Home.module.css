@@ -1,0 +1,8 @@
+.list {
+  max-width: 200px;
+  overflow: hidden;
+}
+
+.code {
+  overflow: hidden;
+}

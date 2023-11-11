@@ -1,0 +1,12 @@
+// basic box implementation using display: flex
+// and mimicing the behaviour of material-ui's Box component
+// https://material-ui.com/components/box/
+
+.box {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: stretch;
+}
